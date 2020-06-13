@@ -15,15 +15,21 @@ export default function App() {
   const [repositories, setRepositories] = useState([]);
 
   useEffect(() => {
-    console.log('Usou efeitos');
     api.get('repositories').then(response => {
-      console.log(response.data);
       setRepositories(response.data);
     })
   }, []);
 
   async function handleLikeRepository(id) {
-    // Implement "Like Repository" functionality
+    const response = await api.post(`repositories/${id}/like`);
+
+    repositories.map(repo => {
+      if (repo.id == id) {
+        repo.likes++;
+      }
+    });
+
+    setRepositories([...repositories]);
   }
 
   return (
@@ -38,8 +44,8 @@ export default function App() {
               <Text style={styles.repository}>{repo.title}</Text>
 
               <View style={styles.techsContainer}>
-                {repo.techs.map((tech) => (
-                  <Text style={styles.tech}>{tech}</Text>
+                {repo.techs.map((tech, id) => (
+                  <Text key={id} style={styles.tech}>{tech}</Text>
                 ))}
               </View>
 
@@ -48,7 +54,7 @@ export default function App() {
                   style={styles.likeText}
                   testID={`repository-likes-${repo.id}`}
                 >
-                  {repo.likes = 1 ? `${repo.likes} curtida` : `${repo.likes} curtidas`}
+                  {repo.likes} curtidas
                 </Text>
               </View>
 
